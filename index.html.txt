@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickTools Hub - All-in-One Free Online Utilities & Developer Tools</title>
+    <meta name="description" content="Access free online utilities including QR Code Generator & Scanner, Image Resizer, Password Generator, Word Counter, Base64 Encoder, URL Slugify, and Random Picker.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- GDPR Cookie Consent Banner -->
+    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-slate-900 text-white p-4 z-50 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg border-t border-slate-800">
+        <p class="text-xs text-slate-300">We use cookies to analyze traffic and ensure you get the best experience on our tools platform. <a href="javascript:void(0)" onclick="openModal('privacy')" class="underline text-indigo-400">Privacy Policy</a></p>
+        <button onclick="acceptCookies()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">Got It / Accept</button>
+    </div>
+
+    <!-- Header & Comprehensive Tool Switcher -->
+    <header class="bg-white border-b border-slate-200 py-3 sticky top-0 z-30 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-3">
+            <h1 class="text-xl font-bold text-indigo-600 tracking-tight">QuickTools <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-medium">Mega Hub</span></h1>
+            
+            <!-- Utility Navigation Menu -->
+            <div class="flex items-center flex-wrap justify-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-medium">
+                <button onclick="switchMainTool('qr')" id="nav-qr" class="main-nav-btn px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-xs transition-all">QR Studio</button>
+                <button onclick="switchMainTool('scanner')" id="nav-scanner" class="main-nav-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">QR Scanner</button>
+                <button onclick="switchMainTool('image')" id="nav-image" class="main-nav-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">Image Resizer</button>
+                <button onclick="switchMainTool('password')" id="nav-password" class="main-nav-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">Password</button>
+                <button onclick="switchMainTool('text')" id="nav-text" class="main-nav-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">Word Counter</button>
+                <button onclick="switchMainTool('base64')" id="nav-base64" class="main-nav-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">Base64</button>
+                <button onclick="switchMainTool('slug')" id="nav-slug" class="main-nav-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">Slugify</button>
+                <button onclick="switchMainTool('picker')" id="nav-picker" class="main-nav-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">Picker</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Top Banner AdSense Slot -->
+    <div class="max-w-6xl mx-auto px-4 w-full my-4">
+        <div class="bg-slate-100 border border-dashed border-slate-300 rounded-lg p-3 text-center text-xs text-slate-400">
+            [ AdSense Global Header Unit (Ad Slot ID: 1234567890) ]
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER FOR ALL TOOLS -->
+    <main class="max-w-6xl mx-auto px-4 w-full flex-grow mb-12">
+        
+        <!-- ================= 1. QR CODE STUDIO ================= -->
+        <div id="tool-qr" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap border-b border-slate-200 mb-6 gap-2">
+                        <button onclick="switchQRTab('url')" id="btn-url" class="qr-tab-btn pb-3 px-3 font-semibold text-indigo-600 border-b-2 border-indigo-600 transition-all text-sm">Website URL</button>
+                        <button onclick="switchQRTab('whatsapp')" id="btn-whatsapp" class="qr-tab-btn pb-3 px-3 font-medium text-slate-500 hover:text-slate-800 transition-all text-sm">WhatsApp</button>
+                        <button onclick="switchQRTab('phone')" id="btn-phone" class="qr-tab-btn pb-3 px-3 font-medium text-slate-500 hover:text-slate-800 transition-all text-sm">Phone Call</button>
+                        <button onclick="switchQRTab('wifi')" id="btn-wifi" class="qr-tab-btn pb-3 px-3 font-medium text-slate-500 hover:text-slate-800 transition-all text-sm">Wi-Fi</button>
+                        <button onclick="switchQRTab('vcard')" id="btn-vcard" class="qr-tab-btn pb-3 px-3 font-medium text-slate-500 hover:text-slate-800 transition-all text-sm">vCard</button>
+                    </div>
+
+                    <div id="form-container" class="mb-8">
+                        <div id="panel-url" class="qr-panel space-y-4">
+                            <label class="block text-sm font-medium text-slate-700">Website or Link URL</label>
+                            <input type="url" id="input-url" placeholder="https://example.com" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="generateQR()">
+                        </div>
+
+                        <div id="panel-whatsapp" class="qr-panel space-y-4 hidden">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">WhatsApp Number (with country code)</label>
+                                <input type="tel" id="wa-number" placeholder="+8801700000000" class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="generateQR()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">Pre-filled Message (Optional)</label>
+                                <textarea id="wa-message" placeholder="Hi, I would like to know more about your services." class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" rows="2" oninput="generateQR()"></textarea>
+                            </div>
+                        </div>
+
+                        <div id="panel-phone" class="qr-panel space-y-4 hidden">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">Phone Number for Direct Call</label>
+                                <input type="tel" id="phone-number" placeholder="+8801700000000" class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="generateQR()">
+                            </div>
+                        </div>
+
+                        <div id="panel-wifi" class="qr-panel space-y-4 hidden">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">Network Name (SSID)</label>
+                                <input type="text" id="wifi-ssid" placeholder="MyHomeWiFi" class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="generateQR()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">Password</label>
+                                <input type="text" id="wifi-pass" placeholder="Network Password" class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="generateQR()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">Encryption Type</label>
+                                <select id="wifi-encryption" class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" onchange="generateQR()">
+                                    <option value="WPA">WPA/WPA2</option>
+                                    <option value="WEP">WEP</option>
+                                    <option value="nopass">No Password</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="panel-vcard" class="qr-panel space-y-4 hidden">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">Full Name</label>
+                                <input type="text" id="vcard-name" placeholder="John Doe" class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="generateQR()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">Phone Number</label>
+                                <input type="tel" id="vcard-phone" placeholder="+1234567890" class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="generateQR()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700">Email Address</label>
+                                <input type="email" id="vcard-email" placeholder="john@example.com" class="w-full px-4 py-2 border border-slate-300 rounded-lg mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="generateQR()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-semibold text-slate-800">Customize QR Colors</h3>
+                        <button onclick="resetColors()" class="text-xs text-indigo-600 hover:underline font-medium">Reset Default</button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">QR Dots Color (Dark)</label>
+                            <div class="flex items-center gap-2 border border-slate-300 rounded-lg p-1.5">
+                                <input type="color" id="color-dark" value="#000000" oninput="generateQR()" class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent">
+                                <span id="hex-dark" class="text-xs font-mono text-slate-600">#000000</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Background Color (Light)</label>
+                            <div class="flex items-center gap-2 border border-slate-300 rounded-lg p-1.5">
+                                <input type="color" id="color-light" value="#ffffff" oninput="generateQR()" class="w-8 h-8 rounded cursor-pointer border-0 bg-transparent">
+                                <span id="hex-light" class="text-xs font-mono text-slate-600">#FFFFFF</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="contrast-warning" class="hidden mt-3 p-2.5 rounded-lg bg-amber-50 border border-amber-300 text-xs text-amber-800"></div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col items-center justify-center text-center">
+                    <div id="qrcode-raw" class="hidden"></div>
+                    <div class="p-3 bg-slate-100 border border-slate-200 rounded-xl mb-4 flex items-center justify-center">
+                        <canvas id="qrcode-final" width="240" height="240" class="rounded-lg shadow-xs"></canvas>
+                    </div>
+                    <button onclick="downloadQR()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-xl transition-colors shadow-sm">
+                        Download PNG
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-4 text-center text-xs text-slate-400">
+                    [ AdSense Sidebar Unit 300x250 ]
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= 2. QR CODE SCANNER ================= -->
+        <div id="tool-scanner" class="hidden max-w-xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 text-center">
+            <h2 class="text-lg font-bold text-slate-800 mb-1">Live QR Code Scanner</h2>
+            <p class="text-xs text-slate-500 mb-6">Scan any QR code instantly using your device camera.</p>
+            
+            <div id="reader" class="w-full rounded-xl overflow-hidden mb-4 border border-slate-200"></div>
+            <div id="scan-result-box" class="hidden bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-left">
+                <p class="text-xs font-semibold text-indigo-800 mb-1">Scanned Data Result:</p>
+                <a id="scan-result-link" href="#" target="_blank" class="text-sm text-indigo-600 underline break-all font-mono"></a>
+            </div>
+            <!-- AdSense Unit Inside Scanner Tool -->
+            <div class="mt-6 bg-slate-100 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-400">
+                [ AdSense Scanner Tool Bottom Unit (300x250 / Responsive) ]
+            </div>
+        </div>
+
+
+        <!-- ================= 3. IMAGE RESIZER & COMPRESSOR ================= -->
+        <div id="tool-image" class="hidden max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-lg font-bold text-slate-800 mb-1">Image Resizer & Compressor</h2>
+            <p class="text-xs text-slate-500 mb-6">Resize and compress images instantly in your browser securely.</p>
+            
+            <div class="space-y-4">
+                <input type="file" id="image-file-input" accept="image/*" onchange="handleImageUpload(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                
+                <div id="image-editor-box" class="hidden space-y-4 border-t border-slate-200 pt-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">New Width (px)</label>
+                            <input type="number" id="img-width" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" oninput="resizeImage()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Quality / Compression (0.1 - 1.0)</label>
+                            <input type="number" id="img-quality" step="0.1" min="0.1" max="1.0" value="0.8" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" oninput="resizeImage()">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center p-3 bg-slate-100 rounded-xl">
+                        <img id="image-preview" class="max-h-48 rounded-lg shadow-sm" alt="Preview">
+                    </div>
+                    <button onclick="downloadResizedImage()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-xl transition-colors text-sm">
+                        Download Processed Image
+                    </button>
+                </div>
+            </div>
+            <!-- AdSense Unit Inside Image Tool -->
+            <div class="mt-6 bg-slate-100 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-400">
+                [ AdSense Image Tool Bottom Unit (Responsive Banner) ]
+            </div>
+        </div>
+
+
+        <!-- ================= 4. PASSWORD GENERATOR ================= -->
+        <div id="tool-password" class="hidden max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-lg font-bold text-slate-800 mb-2">Secure Password Generator</h2>
+            <p class="text-xs text-slate-500 mb-6">Generate cryptographically secure passwords to protect your accounts.</p>
+            
+            <div class="space-y-6">
+                <div class="flex items-center gap-3 bg-slate-100 border border-slate-300 rounded-xl p-3">
+                    <input type="text" id="password-output" readonly class="w-full bg-transparent font-mono text-lg font-semibold text-slate-800 focus:outline-none px-2" value="P@ssw0rd2026!">
+                    <button onclick="copyToClipboard('password-output', 'Password copied!')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap">Copy</button>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
+                        <span>Password Length: <strong id="length-val">16</strong></span>
+                    </div>
+                    <input type="range" id="password-length" min="8" max="32" value="16" oninput="updatePassword()" class="w-full accent-indigo-600 cursor-pointer">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <label class="flex items-center gap-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="include-uppercase" checked onchange="updatePassword()" class="w-4 h-4 accent-indigo-600 rounded"> Uppercase (A-Z)</label>
+                    <label class="flex items-center gap-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="include-lowercase" checked onchange="updatePassword()" class="w-4 h-4 accent-indigo-600 rounded"> Lowercase (a-z)</label>
+                    <label class="flex items-center gap-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="include-numbers" checked onchange="updatePassword()" class="w-4 h-4 accent-indigo-600 rounded"> Numbers (0-9)</label>
+                    <label class="flex items-center gap-3 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="include-symbols" checked onchange="updatePassword()" class="w-4 h-4 accent-indigo-600 rounded"> Symbols (!@#$)</label>
+                </div>
+
+                <button onclick="updatePassword()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 px-4 rounded-xl transition-colors text-sm">Generate New Password</button>
+            </div>
+            <!-- AdSense Unit Inside Password Tool -->
+            <div class="mt-6 bg-slate-100 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-400">
+                [ AdSense Password Tool Bottom Unit (Responsive Banner) ]
+            </div>
+        </div>
+
+
+        <!-- ================= 5. TEXT & WORD COUNTER ================= -->
+        <div id="tool-text" class="hidden max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-lg font-bold text-slate-800 mb-2">Word & Character Counter</h2>
+            <p class="text-xs text-slate-500 mb-6">Analyze your articles, essays, or posts in real-time.</p>
+            
+            <div class="space-y-6">
+                <textarea id="text-input" oninput="analyzeText()" placeholder="Type or paste your text here..." rows="6" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm"></textarea>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center"><span class="block text-2xl font-bold text-indigo-600" id="stat-words">0</span><span class="text-xs text-slate-600 font-medium">Words</span></div>
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center"><span class="block text-2xl font-bold text-indigo-600" id="stat-chars">0</span><span class="text-xs text-slate-600 font-medium">Characters</span></div>
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center"><span class="block text-2xl font-bold text-indigo-600" id="stat-sentences">0</span><span class="text-xs text-slate-600 font-medium">Sentences</span></div>
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center"><span class="block text-2xl font-bold text-indigo-600" id="stat-reading">0 min</span><span class="text-xs text-slate-600 font-medium">Reading Time</span></div>
+                </div>
+            </div>
+            <!-- AdSense Unit Inside Word Counter Tool -->
+            <div class="mt-6 bg-slate-100 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-400">
+                [ AdSense Word Counter Bottom Unit (Responsive Banner) ]
+            </div>
+        </div>
+
+
+        <!-- ================= 6. BASE64 ENCODER / DECODER ================= -->
+        <div id="tool-base64" class="hidden max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-lg font-bold text-slate-800 mb-2">Base64 Encoder & Decoder</h2>
+            <p class="text-xs text-slate-500 mb-6">Convert plain text to Base64 format or decode it back instantly.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Input Text / Base64 String</label>
+                    <textarea id="base64-input" oninput="processBase64()" rows="4" placeholder="Enter text here..." class="w-full px-4 py-2 border border-slate-300 rounded-xl text-sm"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Output Result</label>
+                    <textarea id="base64-output" readonly rows="4" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono"></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="setBase64Mode('encode')" id="btn-enc" class="flex-1 bg-indigo-600 text-white text-xs font-medium py-2.5 rounded-xl shadow-xs">Encode to Base64</button>
+                    <button onclick="setBase64Mode('decode')" id="btn-dec" class="flex-1 bg-slate-200 text-slate-700 text-xs font-medium py-2.5 rounded-xl">Decode from Base64</button>
+                </div>
+            </div>
+            <!-- AdSense Unit Inside Base64 Tool -->
+            <div class="mt-6 bg-slate-100 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-400">
+                [ AdSense Base64 Tool Bottom Unit (Responsive Banner) ]
+            </div>
+        </div>
+
+
+        <!-- ================= 7. URL SLUG GENERATOR ================= -->
+        <div id="tool-slug" class="hidden max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-lg font-bold text-slate-800 mb-2">URL Slug Generator (Slugify)</h2>
+            <p class="text-xs text-slate-500 mb-6">Convert article titles into clean, SEO-friendly URL slugs.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Article Title or Heading</label>
+                    <input type="text" id="slug-input" oninput="generateSlug()" placeholder="e.g. How to Build a Custom Website in 2026!" class="w-full px-4 py-2 border border-slate-300 rounded-xl text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Generated SEO Slug</label>
+                    <div class="flex items-center gap-3 bg-slate-100 border border-slate-300 rounded-xl p-3">
+                        <input type="text" id="slug-output" readonly class="w-full bg-transparent font-mono text-sm text-slate-800 focus:outline-none">
+                        <button onclick="copyToClipboard('slug-output', 'Slug copied!')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap">Copy</button>
+                    </div>
+                </div>
+            </div>
+            <!-- AdSense Unit Inside Slug Tool -->
+            <div class="mt-6 bg-slate-100 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-400">
+                [ AdSense Slug Generator Bottom Unit (Responsive Banner) ]
+            </div>
+        </div>
+
+
+        <!-- ================= 8. RANDOM NUMBER / NAME PICKER ================= -->
+        <div id="tool-picker" class="hidden max-w-xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 text-center">
+            <h2 class="text-lg font-bold text-slate-800 mb-1">Random Number & Picker Tool</h2>
+            <p class="text-xs text-slate-500 mb-6">Perfect for giveaways, lucky draws, and random number selection.</p>
+            
+            <div class="space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Minimum Number</label>
+                        <input type="number" id="picker-min" value="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-center font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Maximum Number</label>
+                        <input type="number" id="picker-max" value="100" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-center font-bold">
+                    </div>
+                </div>
+                <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-6">
+                    <span class="block text-xs uppercase tracking-wider text-indigo-600 font-semibold mb-1">Selected Winner / Number</span>
+                    <span id="picker-result" class="block text-5xl font-black text-indigo-700 font-mono">--</span>
+                </div>
+                <button onclick="pickRandomNumber()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-sm text-sm">
+                    Pick Random Number Now!
+                </button>
+            </div>
+            <!-- AdSense Unit Inside Picker Tool -->
+            <div class="mt-6 bg-slate-100 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-400">
+                [ AdSense Picker Tool Bottom Unit (Responsive Banner) ]
+            </div>
+        </div>
+
+    </main>
+
+
+    <!-- Merchandise Mockup Section (Only visible on QR tool) -->
+    <section id="merch-section" class="max-w-6xl mx-auto px-4 w-full mb-16">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">Merchandise & Apparel Preview</h2>
+                    <p class="text-xs text-slate-500 mt-1">See how your QR code looks printed on T-Shirts, Caps, and Coffee Mugs.</p>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                    <span class="text-xs font-medium text-slate-600 pl-2">Color:</span>
+                    <button onclick="changeMerchColor('#1e293b', '#0f172a')" class="w-6 h-6 rounded-full bg-slate-800 border-2 border-white shadow-sm"></button>
+                    <button onclick="changeMerchColor('#ffffff', '#cbd5e1')" class="w-6 h-6 rounded-full bg-white border-2 border-slate-300 shadow-sm"></button>
+                    <button onclick="changeMerchColor('#4f46e5', '#3730a3')" class="w-6 h-6 rounded-full bg-indigo-600 border-2 border-white shadow-sm"></button>
+                    <button onclick="changeMerchColor('#dc2626', '#991b1b')" class="w-6 h-6 rounded-full bg-red-600 border-2 border-white shadow-sm"></button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- T-Shirt -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center">
+                    <div id="mockup-tshirt" class="relative w-full h-64 bg-slate-200 rounded-lg flex items-center justify-center overflow-hidden shadow-inner">
+                        <svg viewBox="0 0 300 300" class="w-56 h-56 drop-shadow-md">
+                            <path class="merch-fill" fill="#1e293b" stroke="#0f172a" stroke-width="3" d="M95,45 C110,60 190,60 205,45 L265,80 L245,130 L215,115 L215,260 L85,260 L85,115 L55,130 L35,80 Z" />
+                        </svg>
+                        <div class="absolute top-[100px] z-10 bg-white p-1 rounded shadow-sm"><canvas id="qr-tshirt" width="65" height="65"></canvas></div>
+                    </div>
+                    <button onclick="downloadMockup('mockup-tshirt', 'tshirt-mockup.png')" class="mt-4 w-full bg-slate-800 text-white text-xs py-2 rounded-lg">Download Mockup</button>
+                </div>
+                <!-- Cap -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center">
+                    <div id="mockup-cap" class="relative w-full h-64 bg-slate-200 rounded-lg flex items-center justify-center overflow-hidden shadow-inner">
+                        <svg viewBox="0 0 300 280" class="w-56 h-56 drop-shadow-md">
+                            <path class="merch-fill" fill="#1e293b" stroke="#0f172a" stroke-width="3" d="M65,165 C65,95 100,56 150,56 C200,56 235,95 235,165 Z" />
+                            <path fill="#0f172a" d="M62,165 C95,152 205,152 238,165 C255,182 245,205 150,205 C55,205 45,182 62,165 Z" />
+                        </svg>
+                        <div class="absolute top-[88px] z-10 bg-white p-1 rounded shadow-sm"><canvas id="qr-cap" width="50" height="50"></canvas></div>
+                    </div>
+                    <button onclick="downloadMockup('mockup-cap', 'cap-mockup.png')" class="mt-4 w-full bg-slate-800 text-white text-xs py-2 rounded-lg">Download Mockup</button>
+                </div>
+                <!-- Mug -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center">
+                    <div id="mockup-mug" class="relative w-full h-64 bg-slate-200 rounded-lg flex items-center justify-center overflow-hidden shadow-inner">
+                        <svg viewBox="0 0 300 280" class="w-56 h-56 drop-shadow-md">
+                            <path fill="none" stroke="#1e293b" stroke-width="14" d="M205,95 C250,95 250,185 205,185" />
+                            <path class="merch-fill" fill="#1e293b" stroke="#0f172a" stroke-width="3" d="M75,70 L205,70 L205,205 C205,220 180,228 140,228 C100,228 75,220 75,205 Z" />
+                        </svg>
+                        <div class="absolute top-[96px] left-1/2 -translate-x-[58%] z-10 bg-white p-1 rounded shadow-sm"><canvas id="qr-mug" width="65" height="65"></canvas></div>
+                    </div>
+                    <button onclick="downloadMockup('mockup-mug', 'mug-mockup.png')" class="mt-4 w-full bg-slate-800 text-white text-xs py-2 rounded-lg">Download Mockup</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-8 mt-auto text-center text-sm text-slate-500">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 QuickTools Mega Hub. All rights reserved.</p>
+            <div class="flex flex-wrap gap-4 text-xs">
+                <a href="javascript:void(0)" onclick="openModal('privacy')" class="hover:underline">Privacy Policy</a>
+                <a href="javascript:void(0)" onclick="openModal('terms')" class="hover:underline">Terms</a>
+                <a href="javascript:void(0)" onclick="openModal('disclaimer')" class="hover:underline">Disclaimer</a>
+                <a href="javascript:void(0)" onclick="openModal('contact')" class="hover:underline">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Policy Modal -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 relative max-h-[80vh] overflow-y-auto">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 font-bold text-lg">&times;</button>
+            <div id="modal-content" class="text-sm text-slate-700 space-y-3"></div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let currentQRTab = 'url';
+        let html5QrCode = null;
+        let base64Mode = 'encode';
+        let originalImageObj = null;
+
+        window.onload = function() {
+            generateQR();
+            updatePassword();
+            if (localStorage.getItem('cookiesAccepted')) {
+                document.getElementById('cookie-banner').style.display = 'none';
+            }
+        };
+
+        // Switch Main Hub Tools
+        function switchMainTool(toolName) {
+            document.querySelectorAll('.main-nav-btn').forEach(btn => {
+                btn.className = "main-nav-btn px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+            });
+            document.getElementById(`nav-${toolName}`).className = "main-nav-btn px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-xs transition-all";
+
+            const tools = ['qr', 'scanner', 'image', 'password', 'text', 'base64', 'slug', 'picker'];
+            tools.forEach(t => {
+                const el = document.getElementById(`tool-${t}`);
+                if(el) el.classList.add('hidden');
+            });
+            document.getElementById('merch-section').classList.add('hidden');
+
+            if (html5QrCode && toolName !== 'scanner') {
+                html5QrCode.stop().catch(() => {});
+            }
+
+            if (toolName === 'qr') {
+                document.getElementById('tool-qr').classList.remove('hidden');
+                document.getElementById('merch-section').classList.remove('hidden');
+            } else if (toolName === 'scanner') {
+                document.getElementById('tool-scanner').classList.remove('hidden');
+                startQRScanner();
+            } else {
+                document.getElementById(`tool-${toolName}`).classList.remove('hidden');
+            }
+        }
+
+        // 1. QR Studio Logic
+        function switchQRTab(tabName) {
+            currentQRTab = tabName;
+            document.querySelectorAll('.qr-tab-btn').forEach(btn => {
+                btn.className = "qr-tab-btn pb-3 px-3 font-medium text-slate-500 hover:text-slate-800 transition-all text-sm";
+            });
+            document.getElementById(`btn-${tabName}`).className = "qr-tab-btn pb-3 px-3 font-semibold text-indigo-600 border-b-2 border-indigo-600 transition-all text-sm";
+            document.querySelectorAll('.qr-panel').forEach(panel => panel.classList.add('hidden'));
+            document.getElementById(`panel-${tabName}`).classList.remove('hidden');
+            generateQR();
+        }
+
+        function resetColors() {
+            document.getElementById('color-dark').value = '#000000';
+            document.getElementById('color-light').value = '#ffffff';
+            generateQR();
+        }
+
+        function getLuminance(hex) {
+            const rgb = parseInt(hex.slice(1), 16);
+            const r = ((rgb >> 16) & 0xff) / 255;
+            const g = ((rgb >>  8) & 0xff) / 255;
+            const b = ((rgb >>  0) & 0xff) / 255;
+            const a = [r, g, b].map(v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+            return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+        }
+
+        function checkContrast(darkHex, lightHex) {
+            const warningBox = document.getElementById('contrast-warning');
+            const lumDark = getLuminance(darkHex);
+            const lumLight = getLuminance(lightHex);
+            if (lumLight < lumDark) {
+                warningBox.innerHTML = `<strong>Warning:</strong> Inverted colors might fail scanning.`;
+                warningBox.classList.remove('hidden');
+            } else {
+                warningBox.classList.add('hidden');
+            }
+        }
+
+        function generateQR() {
+            let data = "";
+            if (currentQRTab === 'url') data = document.getElementById('input-url').value || "https://example.com";
+            else if (currentQRTab === 'whatsapp') {
+                let num = document.getElementById('wa-number').value.replace(/[^0-9]/g, '');
+                let msg = encodeURIComponent(document.getElementById('wa-message').value);
+                data = num ? `https://wa.me/${num}${msg ? '?text=' + msg : ''}` : "https://wa.me/";
+            } else if (currentQRTab === 'phone') {
+                let phone = document.getElementById('phone-number').value;
+                data = phone ? `tel:${phone}` : "tel:+8801700000000";
+            } else if (currentQRTab === 'wifi') {
+                let ssid = document.getElementById('wifi-ssid').value;
+                let pass = document.getElementById('wifi-pass').value;
+                let enc = document.getElementById('wifi-encryption').value;
+                data = `WIFI:S:${ssid};T:${enc};P:${pass};;`;
+            } else if (currentQRTab === 'vcard') {
+                let name = document.getElementById('vcard-name').value;
+                let phone = document.getElementById('vcard-phone').value;
+                let email = document.getElementById('vcard-email').value;
+                data = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nEND:VCARD`;
+            }
+
+            const colorDark = document.getElementById('color-dark').value;
+            const colorLight = document.getElementById('color-light').value;
+            document.getElementById('hex-dark').textContent = colorDark.toUpperCase();
+            document.getElementById('hex-light').textContent = colorLight.toUpperCase();
+            checkContrast(colorDark, colorLight);
+
+            const rawContainer = document.getElementById("qrcode-raw");
+            rawContainer.innerHTML = "";
+
+            try {
+                new QRCode(rawContainer, { text: data, width: 200, height: 200, colorDark: colorDark, colorLight: colorLight, correctLevel: QRCode.CorrectLevel.M });
+                setTimeout(() => {
+                    const rawCanvas = rawContainer.querySelector('canvas');
+                    const finalCanvas = document.getElementById('qrcode-final');
+                    const ctx = finalCanvas.getContext('2d');
+                    ctx.fillStyle = colorLight;
+                    ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                    if (rawCanvas) ctx.drawImage(rawCanvas, 20, 20, 200, 200);
+
+                    renderMiniQR('qr-tshirt', rawCanvas, colorLight);
+                    renderMiniQR('qr-cap', rawCanvas, colorLight);
+                    renderMiniQR('qr-mug', rawCanvas, colorLight);
+                }, 20);
+            } catch(e) {}
+        }
+
+        function renderMiniQR(canvasId, rawCanvas, bgCol) {
+            const canvas = document.getElementById(canvasId);
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = bgCol;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (rawCanvas) ctx.drawImage(rawCanvas, 4, 4, canvas.width - 8, canvas.height - 8);
+        }
+
+        function downloadQR() {
+            const finalCanvas = document.getElementById('qrcode-final');
+            const link = document.createElement('a');
+            link.href = finalCanvas.toDataURL("image/png");
+            link.download = `qrcode-${currentQRTab}.png`;
+            link.click();
+        }
+
+        function changeMerchColor(mainColor, borderColor) {
+            document.querySelectorAll('.merch-fill').forEach(el => {
+                el.setAttribute('fill', mainColor);
+                el.setAttribute('stroke', borderColor);
+            });
+        }
+
+        function downloadMockup(containerId, filename) {
+            html2canvas(document.getElementById(containerId), { scale: 2, backgroundColor: null }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL("image/png");
+                link.download = filename;
+                link.click();
+            });
+        }
+
+        // 2. QR Scanner Logic
+        function startQRScanner() {
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    const box = document.getElementById('scan-result-box');
+                    const link = document.getElementById('scan-result-link');
+                    box.classList.remove('hidden');
+                    link.href = decodedText;
+                    link.textContent = decodedText;
+                },
+                () => {}
+            ).catch(err => {
+                console.log("Camera start error:", err);
+            });
+        }
+
+        // 3. Image Resizer Logic
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                originalImageObj = new Image();
+                originalImageObj.onload = function() {
+                    document.getElementById('img-width').value = originalImageObj.width;
+                    document.getElementById('image-editor-box').classList.remove('hidden');
+                    resizeImage();
+                }
+                originalImageObj.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function resizeImage() {
+            if (!originalImageObj) return;
+            const w = parseInt(document.getElementById('img-width').value) || originalImageObj.width;
+            const h = Math.round(originalImageObj.height * (w / originalImageObj.width));
+            const quality = parseFloat(document.getElementById('img-quality').value) || 0.8;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(originalImageObj, 0, 0, w, h);
+            document.getElementById('image-preview').src = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        function downloadResizedImage() {
+            const preview = document.getElementById('image-preview').src;
+            const link = document.createElement('a');
+            link.href = preview;
+            link.download = 'resized-image.jpg';
+            link.click();
+        }
+
+        // 4. Password Generator Logic
+        function updatePassword() {
+            const len = document.getElementById('password-length').value;
+            document.getElementById('length-val').textContent = len;
+            let chars = "";
+            if (document.getElementById('include-uppercase').checked) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if (document.getElementById('include-lowercase').checked) chars += "abcdefghijklmnopqrstuvwxyz";
+            if (document.getElementById('include-numbers').checked) chars += "0123456789";
+            if (document.getElementById('include-symbols').checked) chars += "!@#$%^&*()_+-=[]{}|;:,.<>?";
+            
+            if (!chars) { document.getElementById('password-output').value = "Select option!"; return; }
+            let pwd = "";
+            for (let i = 0; i < len; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('password-output').value = pwd;
+        }
+
+        // 5. Word Counter Logic
+        function analyzeText() {
+            const t = document.getElementById('text-input').value.trim();
+            const words = t === "" ? 0 : t.split(/\s+/).length;
+            document.getElementById('stat-words').textContent = words;
+            document.getElementById('stat-chars').textContent = t.length;
+            document.getElementById('stat-sentences').textContent = t === "" ? 0 : t.split(/[.!?]+/).filter(Boolean).length;
+            document.getElementById('stat-reading').textContent = `${Math.ceil(words / 200)} min`;
+        }
+
+        // 6. Base64 Logic
+        function setBase64Mode(mode) {
+            base64Mode = mode;
+            document.getElementById('btn-enc').className = mode === 'encode' ? 'flex-1 bg-indigo-600 text-white text-xs font-medium py-2.5 rounded-xl shadow-xs' : 'flex-1 bg-slate-200 text-slate-700 text-xs font-medium py-2.5 rounded-xl';
+            document.getElementById('btn-dec').className = mode === 'decode' ? 'flex-1 bg-indigo-600 text-white text-xs font-medium py-2.5 rounded-xl shadow-xs' : 'flex-1 bg-slate-200 text-slate-700 text-xs font-medium py-2.5 rounded-xl';
+            processBase64();
+        }
+
+        function processBase64() {
+            const val = document.getElementById('base64-input').value;
+            try {
+                if (base64Mode === 'encode') {
+                    document.getElementById('base64-output').value = btoa(val);
+                } else {
+                    document.getElementById('base64-output').value = atob(val);
+                }
+            } catch(e) {
+                document.getElementById('base64-output').value = "Invalid input for decoding!";
+            }
+        }
+
+        // 7. Slug Generator Logic
+        function generateSlug() {
+            const text = document.getElementById('slug-input').value;
+            const slug = text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
+            document.getElementById('slug-output').value = slug;
+        }
+
+        // 8. Random Picker Logic
+        function pickRandomNumber() {
+            const min = parseInt(document.getElementById('picker-min').value) || 1;
+            const max = parseInt(document.getElementById('picker-max').value) || 100;
+            const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+            document.getElementById('picker-result').textContent = rand;
+        }
+
+        function copyToClipboard(elementId, msg) {
+            navigator.clipboard.writeText(document.getElementById(elementId).value);
+            alert(msg);
+        }
+
+        function acceptCookies() {
+            localStorage.setItem('cookiesAccepted', 'true');
+            document.getElementById('cookie-banner').style.display = 'none';
+        }
+
+        const policyData = {
+            privacy: `<h3 class="font-bold text-base text-slate-800">Privacy Policy</h3><p>All operations run locally in your web browser. We never store or transmit your data.</p>`,
+            terms: `<h3 class="font-bold text-base text-slate-800">Terms of Service</h3><p>Provided free for utility purposes.</p>`,
+            disclaimer: `<h3 class="font-bold text-base text-slate-800">Disclaimer</h3><p>Tools provided as-is.</p>`,
+            contact: `<h3 class="font-bold text-base text-slate-800">Contact Us</h3><p>Email: support@quicktoolshub.com</p>`
+        };
+        function openModal(type) {
+            document.getElementById('modal-content').innerHTML = policyData[type];
+            document.getElementById('modal-backdrop').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('modal-backdrop').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
