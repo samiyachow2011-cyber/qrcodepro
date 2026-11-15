@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101828">
+  <meta name="description" content="QuickTools Hub offers free browser-based QR code tools, image resizing, password generation, text analysis, Base64 conversion and more.">
+  <meta name="robots" content="index,follow">
+  <title>QuickTools Hub — Free Online Tools</title>
+
+  <!--
+    GOOGLE ADSENSE SETUP
+    1. Wait until your AdSense account gives you your publisher ID (ca-pub-XXXXXXXXXXXXXXXX).
+    2. Replace the placeholder in the script below and uncomment it.
+    3. Create ad units in AdSense and replace each data-ad-slot placeholder below.
+    4. Do not click your own ads, encourage clicks, or put ads next to controls in a confusing way.
+
+    <script async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+      crossorigin="anonymous"></script>
+  -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #e6eaf0;
+      --surface: #ffffff;
+      --page: #f5f7fb;
+      --brand: #6258e8;
+      --brand-dark: #4b42c8;
+      --teal: #13a89e;
+      --radius: 20px;
+      --shadow: 0 12px 35px rgba(25, 35, 65, .07);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; color: var(--ink); background: var(--page);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    button, input, textarea, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    .wrap { width: min(1120px, calc(100% - 36px)); margin-inline: auto; }
+    .site-header {
+      position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92);
+      border-bottom: 1px solid rgba(230,234,240,.9); backdrop-filter: blur(14px);
+    }
+    .nav { min-height: 72px; display:flex; align-items:center; justify-content:space-between; gap:18px; }
+    .brand { display:flex; align-items:center; gap:11px; text-decoration:none; font-weight:850; letter-spacing:-.6px; font-size:1.15rem; white-space:nowrap; }
+    .brand-mark { display:grid; place-items:center; width:39px; height:39px; color:white; border-radius:13px; background:linear-gradient(135deg,#766cff,#24b8ad); box-shadow:0 7px 16px #6258e833; }
+    .brand small { display:block; color:var(--muted); font-size:.67rem; font-weight:600; letter-spacing:.3px; margin-top:-4px; }
+    .nav-links { display:flex; align-items:center; gap:8px; }
+    .nav-links a { text-decoration:none; color:#475467; padding:9px 12px; border-radius:10px; font-size:.9rem; font-weight:650; }
+    .nav-links a:hover { background:#f0efff; color:var(--brand); }
+    .menu-toggle { display:none; border:1px solid var(--line); background:white; border-radius:10px; padding:8px 12px; }
+    .hero { padding:66px 0 38px; text-align:center; background:radial-gradient(ellipse at 50% 0%,#e8e7ff 0,transparent 62%); }
+    .eyebrow { display:inline-flex; align-items:center; gap:8px; border:1px solid #dedcff; color:var(--brand-dark); background:#f2f1ff; padding:6px 12px; border-radius:999px; font-size:.78rem; font-weight:750; }
+    .hero h1 { max-width:780px; margin:18px auto 12px; font-size:clamp(2.25rem,5vw,4rem); line-height:1.08; letter-spacing:-2px; }
+    .gradient-text { background:linear-gradient(100deg,#6258e8,#13a89e); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .hero p { max-width:650px; margin:0 auto; color:var(--muted); font-size:1.06rem; }
+    .search-wrap { max-width:590px; margin:26px auto 0; position:relative; }
+    .search-wrap input { width:100%; padding:16px 18px 16px 48px; border:1px solid #dfe3ed; border-radius:15px; background:white; box-shadow:var(--shadow); outline:none; }
+    .search-wrap input:focus { border-color:var(--brand); box-shadow:0 0 0 4px #6258e81a; }
+    .search-icon { position:absolute; left:17px; top:12px; font-size:1.2rem; color:#98a2b3; }
+    .ad-slot { min-height:90px; margin:24px auto; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd2df; border-radius:14px; background:#fbfcff; color:#98a2b3; font-size:.75rem; text-align:center; padding:12px; }
+    .ad-slot span { max-width:500px; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:16px; margin:35px 0 18px; }
+    .section-head h2 { margin:0; font-size:1.45rem; letter-spacing:-.5px; }
+    .section-head p { margin:4px 0 0; color:var(--muted); font-size:.9rem; }
+    .tool-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:15px; }
+    .tool-card { border:1px solid var(--line); background:white; border-radius:17px; padding:18px; text-align:left; cursor:pointer; box-shadow:0 3px 12px #1b2a4a08; transition:.2s ease; color:var(--ink); }
+    .tool-card:hover { transform:translateY(-3px); border-color:#c9c5ff; box-shadow:var(--shadow); }
+    .tool-icon { display:grid; place-items:center; width:43px; height:43px; border-radius:13px; background:#f0efff; font-size:1.35rem; margin-bottom:13px; }
+    .tool-card:nth-child(3n+2) .tool-icon { background:#e8faf7; }
+    .tool-card:nth-child(3n+3) .tool-icon { background:#fff3e8; }
+    .tool-card strong { display:block; font-size:.98rem; }
+    .tool-card small { display:block; color:var(--muted); margin-top:5px; line-height:1.45; }
+    .tool-section { scroll-margin-top:95px; margin:24px 0; }
+    .panel { display:none; background:white; border:1px solid var(--line); border-radius:var(--radius); padding:clamp(20px,4vw,32px); box-shadow:var(--shadow); }
+    .panel.active { display:block; }
+    .panel h2 { margin:0 0 5px; font-size:1.5rem; letter-spacing:-.5px; }
+    .panel-intro { margin:0 0 22px; color:var(--muted); }
+    .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .field { display:flex; flex-direction:column; gap:7px; }
+    .field.full { grid-column:1/-1; }
+    label { font-size:.88rem; font-weight:700; color:#344054; }
+    input:not([type="checkbox"]):not([type="color"]), textarea, select {
+      width:100%; border:1px solid #d8deea; border-radius:11px; padding:12px 13px; color:var(--ink); background:white; outline:none;
+    }
+    input:focus, textarea:focus, select:focus { border-color:var(--brand); box-shadow:0 0 0 3px #6258e81a; }
+    textarea { min-height:110px; resize:vertical; }
+    input[type="color"] { width:48px; height:42px; border:1px solid var(--line); border-radius:9px; background:white; padding:4px; }
+    input[type="range"] { width:100%; accent-color:var(--brand); }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+    .btn { border:0; border-radius:11px; padding:11px 17px; background:var(--brand); color:white; cursor:pointer; font-weight:750; }
+    .btn:hover { background:var(--brand-dark); }
+    .btn.secondary { color:#344054; background:#f0f2f6; }
+    .btn.secondary:hover { background:#e5e8ef; }
+    .btn.teal { background:#0e9388; }
+    .result { margin-top:17px; padding:15px; border:1px solid #e4e7ec; border-radius:13px; background:#fafbff; overflow-wrap:anywhere; }
+    .qr-layout { display:grid; grid-template-columns:minmax(0,1fr) 280px; gap:22px; align-items:start; }
+    .qr-preview { text-align:center; border:1px solid var(--line); border-radius:16px; padding:20px; background:#fbfcff; }
+    #qrcode { display:inline-block; min-height:220px; min-width:220px; padding:10px; background:white; border-radius:10px; }
+    #qrcode img, #qrcode canvas { max-width:100%; height:auto; }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:15px; }
+    .stat { background:#f7f8fc; border:1px solid var(--line); border-radius:12px; padding:12px; text-align:center; }
+    .stat strong { display:block; font-size:1.35rem; }
+    .stat span { color:var(--muted); font-size:.75rem; }
+    .check-row { display:flex; flex-wrap:wrap; gap:15px; margin-top:10px; }
+    .check-row label { display:flex; align-items:center; gap:7px; font-weight:550; }
+    .check-row input { accent-color:var(--brand); }
+    .info-section { margin:42px 0; padding:28px; background:white; border:1px solid var(--line); border-radius:var(--radius); }
+    .info-section h2 { margin-top:0; }
+    .info-section p, .info-section li { color:#596579; }
+    .footer { margin-top:55px; background:#111a2d; color:#e8edf7; padding:38px 0 25px; }
+    .footer-inner { display:flex; justify-content:space-between; gap:25px; flex-wrap:wrap; }
+    .footer p { color:#aab5c8; max-width:520px; }
+    .footer-links { display:flex; flex-wrap:wrap; gap:16px; align-items:center; }
+    .footer a { color:#d7dded; text-decoration:none; font-size:.9rem; }
+    .footer a:hover { color:white; text-decoration:underline; }
+    .copyright { border-top:1px solid #344056; margin-top:25px; padding-top:18px; color:#aab5c8; font-size:.82rem; }
+    .notice { color:var(--muted); font-size:.82rem; margin-top:12px; }
+    .hidden { display:none !important; }
+    #reader { max-width:500px; margin:15px auto; }
+    .policy { display:none; }
+    .policy:target { display:block; }
+    @media (max-width:850px) {
+      .tool-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .nav { flex-wrap:wrap; padding:12px 0; }
+      .nav-links { display:none; width:100%; flex-direction:column; align-items:stretch; padding:8px 0; }
+      .nav-links.open { display:flex; }
+      .nav-links a { padding:10px; }
+      .menu-toggle { display:block; }
+    }
+    @media (max-width:620px) {
+      .wrap { width:min(100% - 24px,1120px); }
+      .hero { padding:48px 0 25px; }
+      .hero h1 { letter-spacing:-1.2px; }
+      .tool-grid { gap:10px; }
+      .tool-card { padding:14px; }
+      .form-grid, .qr-layout { grid-template-columns:1fr; }
+      .stats { grid-template-columns:repeat(2,1fr); }
+      .section-head { align-items:start; flex-direction:column; }
+    }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="#" aria-label="QuickTools Hub home">
+      <span class="brand-mark">✦</span><span>QuickTools Hub<small>Simple tools. Smarter work.</small></span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="navLinks">☰ Menu</button>
+    <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+      <a href="#tools">All tools</a><a href="#about">About</a><a href="#how">How it works</a><a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">✦ FREE ONLINE UTILITIES</span>
+    <h1>Everything you need.<br><span class="gradient-text">One simple toolkit.</span></h1>
+    <p>Create QR codes, optimize images, write stronger passwords and get everyday tasks done — right in your browser.</p>
+    <div class="search-wrap"><span class="search-icon">⌕</span><input id="toolSearch" type="search" placeholder="Search a tool, e.g. password or QR code..." aria-label="Search tools"></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <!-- Ad placement: keep this clearly separated from navigation and tool controls.
+       After AdSense approval, insert the official ad unit code supplied by AdSense here. -->
+  <div class="ad-slot" aria-label="Advertisement"><span>Advertisement</span></div>
+
+  <main id="tools">
+    <div class="section-head"><div><h2>Explore our tools</h2><p>Choose a tool to get started. No account required.</p></div></div>
+    <div class="tool-grid" id="toolGrid">
+      <button class="tool-card" data-tool="qr"><span class="tool-icon">▦</span><strong>QR Code Studio</strong><small>Create QR codes for links, Wi-Fi, calls and contacts.</small></button>
+      <button class="tool-card" data-tool="scanner"><span class="tool-icon">⌗</span><strong>QR Scanner</strong><small>Scan a QR code using your device camera.</small></button>
+      <button class="tool-card" data-tool="image"><span class="tool-icon">▧</span><strong>Image Resizer</strong><small>Resize and compress images in your browser.</small></button>
+      <button class="tool-card" data-tool="password"><span class="tool-icon">🔐</span><strong>Password Generator</strong><small>Generate strong random passwords.</small></button>
+      <button class="tool-card" data-tool="text"><span class="tool-icon">¶</span><strong>Word Counter</strong><small>Count words, characters and reading time.</small></button>
+      <button class="tool-card" data-tool="base64"><span class="tool-icon">⟷</span><strong>Base64 Converter</strong><small>Encode or decode text instantly.</small></button>
+      <button class="tool-card" data-tool="slug"><span class="tool-icon">🔗</span><strong>URL Slug Generator</strong><small>Turn titles into clean URL-friendly slugs.</small></button>
+      <button class="tool-card" data-tool="picker"><span class="tool-icon">🎲</span><strong>Random Number Picker</strong><small>Pick a random number within a range.</small></button>
+    </div>
+
+    <div class="section-head"><div><h2 id="activeHeading">QR Code Studio</h2><p id="activeSubheading">Make a custom QR code in seconds.</p></div></div>
+
+    <section class="panel active" id="panel-qr" aria-labelledby="activeHeading">
+      <h2>QR Code Studio</h2><p class="panel-intro">Create a downloadable QR code for a website, WhatsApp chat, phone number, Wi-Fi network or contact card.</p>
+      <div class="qr-layout">
+        <div>
+          <div class="field"><label for="qrType">QR code type</label><select id="qrType">
+            <option value="url">Website or URL</option><option value="whatsapp">WhatsApp</option><option value="phone">Phone call</option><option value="wifi">Wi-Fi network</option><option value="vcard">Contact card (vCard)</option>
+          </select></div>
+          <div id="qrFields" class="form-grid" style="margin-top:15px"></div>
+          <div class="form-grid" style="margin-top:15px">
+            <div class="field"><label for="qrDark">QR color</label><input type="color" id="qrDark" value="#172033"></div>
+            <div class="field"><label for="qrLight">Background color</label><input type="color" id="qrLight" value="#ffffff"></div>
+          </div>
+          <div class="actions"><button class="btn" id="makeQr">Generate QR code</button><button class="btn secondary" id="resetQr">Reset</button></div>
+          <p class="notice">Tip: Test your QR code with a phone before printing it. Use strong contrast for reliable scanning.</p>
+        </div>
+        <div class="qr-preview"><div id="qrcode" aria-label="QR code preview"></div><div class="actions" style="justify-content:center"><button class="btn" id="downloadQr">Download PNG</button></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-scanner">
+      <h2>Live QR Code Scanner</h2><p class="panel-intro">Allow camera access to scan a QR code. Camera access generally requires HTTPS and your permission.</p>
+      <div class="actions"><button class="btn" id="startScanner">Start camera</button><button class="btn secondary" id="stopScanner">Stop camera</button></div>
+      <div id="reader"></div><div class="result hidden" id="scanResult"></div>
+      <p class="notice">If camera scanning is unavailable, check browser permissions or try another modern browser.</p>
+    </section>
+
+    <section class="panel" id="panel-image">
+      <h2>Image Resizer & Compressor</h2><p class="panel-intro">Resize an image and export a smaller JPEG or PNG. Your selected image is processed locally in your browser.</p>
+      <div class="form-grid">
+        <div class="field full"><label for="imageFile">Choose an image</label><input type="file" id="imageFile" accept="image/*"></div>
+        <div class="field"><label for="imageWidth">New width (pixels)</label><input type="number" id="imageWidth" min="1" max="10000" value="1000"></div>
+        <div class="field"><label for="imageFormat">Output format</label><select id="imageFormat"><option value="image/jpeg">JPEG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></div>
+        <div class="field full"><label for="imageQuality">Quality: <span id="qualityValue">85%</span></label><input type="range" id="imageQuality" min="10" max="100" value="85"></div>
+      </div>
+      <div id="imageInfo" class="notice">Choose an image to see its dimensions.</div>
+      <div class="actions"><button class="btn" id="processImage">Process & download</button></div>
+      <canvas id="imageCanvas" class="hidden"></canvas>
+    </section>
+
+    <section class="panel" id="panel-password">
+      <h2>Secure Password Generator</h2><p class="panel-intro">Create a random password using the character groups you select. Passwords are generated on your device.</p>
+      <div class="field"><label for="passwordOutput">Generated password</label><input id="passwordOutput" type="text" readonly placeholder="Your password will appear here"></div>
+      <div class="field" style="margin-top:16px"><label for="passwordLength">Password length: <span id="lengthValue">18</span></label><input type="range" id="passwordLength" min="8" max="64" value="18"></div>
+      <div class="check-row">
+        <label><input type="checkbox" id="pwUpper" checked> Uppercase</label>
+        <label><input type="checkbox" id="pwLower" checked> Lowercase</label>
+        <label><input type="checkbox" id="pwNumbers" checked> Numbers</label>
+        <label><input type="checkbox" id="pwSymbols" checked> Symbols</label>
+      </div>
+      <div class="actions"><button class="btn" id="generatePassword">Generate password</button><button class="btn secondary" id="copyPassword">Copy</button></div>
+      <p class="notice">For important accounts, use a reputable password manager and never share your password.</p>
+    </section>
+
+    <section class="panel" id="panel-text">
+      <h2>Word & Character Counter</h2><p class="panel-intro">Paste or type your text to see a live breakdown.</p>
+      <div class="field"><label for="countText">Your text</label><textarea id="countText" placeholder="Start typing or paste your text here..."></textarea></div>
+      <div class="stats">
+        <div class="stat"><strong id="words">0</strong><span>Words</span></div>
+        <div class="stat"><strong id="characters">0</strong><span>Characters</span></div>
+        <div class="stat"><strong id="sentences">0</strong><span>Sentences</span></div>
+        <div class="stat"><strong id="reading">0</strong><span>Min. reading time</span></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-base64">
+      <h2>Base64 Encoder & Decoder</h2><p class="panel-intro">Convert text to Base64 or decode a Base64 string. This tool is for text, not file encryption.</p>
+      <div class="field"><label for="baseInput">Input text</label><textarea id="baseInput" placeholder="Enter text to encode, or Base64 to decode..."></textarea></div>
+      <div class="actions"><button class="btn" id="encodeBase">Encode to Base64</button><button class="btn teal" id="decodeBase">Decode from Base64</button></div>
+      <div class="field" style="margin-top:16px"><label for="baseOutput">Result</label><textarea id="baseOutput" readonly placeholder="Your result will appear here..."></textarea></div>
+      <div class="actions"><button class="btn secondary" id="copyBase">Copy result</button></div>
+      <p class="notice">Base64 is an encoding format, not encryption. Do not use it to protect confidential information.</p>
+    </section>
+
+    <section class="panel" id="panel-slug">
+      <h2>URL Slug Generator</h2><p class="panel-intro">Create a readable, URL-friendly slug from a page title or heading.</p>
+      <div class="field"><label for="slugInput">Article title</label><input id="slugInput" placeholder="How to Build a Better Website in 2026"></div>
+      <div class="field" style="margin-top:16px"><label for="slugOutput">Generated slug</label><input id="slugOutput" readonly></div>
+      <div class="actions"><button class="btn" id="makeSlug">Generate slug</button><button class="btn secondary" id="copySlug">Copy slug</button></div>
+    </section>
+
+    <section class="panel" id="panel-picker">
+      <h2>Random Number Picker</h2><p class="panel-intro">Pick a random whole number between your minimum and maximum values.</p>
+      <div class="form-grid">
+        <div class="field"><label for="pickMin">Minimum number</label><input type="number" id="pickMin" value="1"></div>
+        <div class="field"><label for="pickMax">Maximum number</label><input type="number" id="pickMax" value="100"></div>
+      </div>
+      <div class="result" style="text-align:center"><span style="color:var(--muted);font-size:.85rem">Your selected number</span><div id="pickedNumber" style="font-size:3rem;font-weight:850;line-height:1.3">—</div></div>
+      <div class="actions"><button class="btn" id="pickNumber">Pick a number</button></div>
+    </section>
+
+    <!-- Ad placement: an optional responsive unit can go after the tool content, not beside action buttons. -->
+    <div class="ad-slot" aria-label="Advertisement"><span>Advertisement</span></div>
+
+    <section class="info-section" id="about">
+      <h2>About QuickTools Hub</h2>
+      <p>QuickTools Hub is a collection of practical online utilities designed to make everyday digital tasks easier. Use the QR code generator to share links and contact details, resize images for web use, create random passwords, count words, convert text to Base64, generate URL slugs and pick random numbers.</p>
+      <p>Our goal is to keep the tools straightforward, accessible and easy to use on desktop and mobile devices. Many operations run directly in your browser, so the information you enter stays on your device for those tools.</p>
+    </section>
+
+    <section class="info-section" id="how">
+      <h2>How to use QuickTools Hub</h2>
+      <ol>
+        <li>Choose a tool from the tool cards or search for it by name.</li>
+        <li>Enter the information requested by that tool.</li>
+        <li>Select the action button to generate, convert, scan or process your result.</li>
+        <li>Copy or download your result when the tool provides that option.</li>
+      </ol>
+      <p>For the QR scanner, allow camera permission when prompted. For image processing, select an image from your device. Always check important results before sharing or publishing them.</p>
+    </section>
+
+    <section class="info-section" id="contact">
+      <h2>Contact</h2>
+      <p>Have a question, found a bug, or want to suggest a tool? Contact the website owner at <strong>YOUR-EMAIL@example.com</strong>.</p>
+      <p class="notice">Replace this placeholder with an email address you actively monitor before publishing.</p>
+    </section>
+
+    <section class="info-section" id="privacy">
+      <h2>Privacy Policy</h2>
+      <p><strong>Last updated: November 15, 2026</strong></p>
+      <p>QuickTools Hub provides browser-based utilities. Text entered into the word counter, Base64 converter, slug generator and password generator is processed in your browser. Images selected for resizing are processed locally in your browser. QR scanner camera access is requested only when you start the scanner.</p>
+      <p>This website may use third-party services, including content delivery networks that provide scripts used by the tools. Those providers may process technical information such as your IP address when your browser requests their resources.</p>
+      <p>If Google AdSense is enabled after approval, Google and its partners may use cookies or similar technologies to serve, measure and personalize ads as permitted by your settings and applicable law. You should review Google's information about how it uses data when you use partner sites.</p>
+      <p>For privacy questions or requests, contact the website owner using the contact details published on this website. Customize this policy to accurately describe every analytics, advertising, form, and third-party service you actually use. This template is not legal advice.</p>
+    </section>
+
+    <section class="info-section" id="terms">
+      <h2>Terms of Use</h2>
+      <p>By using QuickTools Hub, you agree to use the tools lawfully and at your own discretion. The tools are provided for general convenience without a guarantee that every result will be error-free, uninterrupted or suitable for a particular purpose.</p>
+      <p>You are responsible for checking generated QR codes, resized images, passwords, encoded text and other outputs before relying on them. Do not use the website to violate another person's rights or applicable laws.</p>
+      <p>The website may be updated, changed or discontinued. To the extent permitted by applicable law, the website owner is not liable for loss arising from use of the tools.</p>
+    </section>
+
+    <section class="info-section" id="disclaimer">
+      <h2>Disclaimer</h2>
+      <p>QuickTools Hub is an independent utility website. It is not affiliated with or endorsed by Google, WhatsApp or any other third-party brand mentioned on the site. Tool results are provided for general informational and convenience purposes. Always verify important outputs independently.</p>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div><a class="brand" href="#" style="color:white"><span class="brand-mark">✦</span><span>QuickTools Hub<small style="color:#aab5c8">Simple tools. Smarter work.</small></span></a><p>Useful, easy-to-use online tools for your everyday digital tasks.</p></div>
+      <div class="footer-links"><a href="#about">About</a><a href="#privacy">Privacy Policy</a><a href="#terms">Terms of Use</a><a href="#disclaimer">Disclaimer</a><a href="#contact">Contact</a></div>
+    </div>
+    <div class="copyright">© <span id="year"></span> QuickTools Hub. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const toolNames = {
+    qr:["QR Code Studio","Make a custom QR code in seconds."],
+    scanner:["QR Scanner","Scan a QR code using your device camera."],
+    image:["Image Resizer & Compressor","Resize and optimize an image in your browser."],
+    password:["Secure Password Generator","Generate a strong random password."],
+    text:["Word & Character Counter","Analyze your text in real time."],
+    base64:["Base64 Encoder & Decoder","Convert text to and from Base64."],
+    slug:["URL Slug Generator","Create clean, readable URL slugs."],
+    picker:["Random Number Picker","Pick a random number in a range."]
+  };
+  let qrInstance = null;
+  let scanner = null;
+  let currentTool = "qr";
+
+  function showTool(name) {
+    if (!toolNames[name]) return;
+    if (scanner && name !== "scanner") stopScanner();
+    currentTool = name;
+    document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + name));
+    $("activeHeading").textContent = toolNames[name][0];
+    $("activeSubheading").textContent = toolNames[name][1];
+    $("tools").scrollIntoView({behavior:"smooth", block:"start"});
+    document.querySelectorAll(".tool-card").forEach(card => card.setAttribute("aria-pressed", String(card.dataset.tool === name)));
+  }
+  document.querySelectorAll(".tool-card").forEach(card => card.addEventListener("click", () => showTool(card.dataset.tool)));
+  $("menuToggle").addEventListener("click", () => {
+    const open = $("navLinks").classList.toggle("open");
+    $("menuToggle").setAttribute("aria-expanded", String(open));
+  });
+  document.querySelectorAll(".nav-links a").forEach(a => a.addEventListener("click", () => $("navLinks").classList.remove("open")));
+  $("toolSearch").addEventListener("input", e => {
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll(".tool-card").forEach(card => card.classList.toggle("hidden", !card.textContent.toLowerCase().includes(q)));
+  });
+  $("year").textContent = new Date().getFullYear();
+
+  // QR Code Studio
+  const qrFieldTemplates = {
+    url: '<div class="field full"><label for="qrUrl">Website or link URL</label><input id="qrUrl" type="url" placeholder="https://example.com"></div>',
+    whatsapp: '<div class="field"><label for="qrWa">WhatsApp number</label><input id="qrWa" type="tel" placeholder="+8801700000000"></div><div class="field"><label for="qrMessage">Optional message</label><input id="qrMessage" placeholder="Hello!"></div>',
+    phone: '<div class="field full"><label for="qrPhone">Phone number</label><input id="qrPhone" type="tel" placeholder="+8801700000000"></div>',
+    wifi: '<div class="field"><label for="qrSsid">Network name (SSID)</label><input id="qrSsid" placeholder="My Wi-Fi"></div><div class="field"><label for="qrWifiPass">Wi-Fi password</label><input id="qrWifiPass" type="text" placeholder="Password"></div><div class="field full"><label for="qrEncryption">Security</label><select id="qrEncryption"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">No password</option></select></div>',
+    vcard: '<div class="field"><label for="qrName">Full name</label><input id="qrName" placeholder="Your name"></div><div class="field"><label for="qrVPhone">Phone</label><input id="qrVPhone" type="tel" placeholder="+880..."></div><div class="field full"><label for="qrEmail">Email</label><input id="qrEmail" type="email" placeholder="name@example.com"></div>'
+  };
+  function renderQrFields() {
+    $("qrFields").innerHTML = qrFieldTemplates[$("qrType").value];
+  }
+  function qrPayload() {
+    const type = $("qrType").value;
+    if (type === "url") {
+      const value = $("qrUrl").value.trim();
+      if (!value) throw Error("Enter a website URL.");
+      let url; try { url = new URL(value); } catch { throw Error("Enter a valid URL, including https://."); }
+      if (!["http:","https:"].includes(url.protocol)) throw Error("Only http and https URLs are supported.");
+      return url.href;
+    }
+    if (type === "whatsapp") {
+      const phone = $("qrWa").value.replace(/\D/g,"");
+      if (!phone) throw Error("Enter a WhatsApp number with country code.");
+      return "https://wa.me/" + phone + ($("qrMessage").value ? "?text=" + encodeURIComponent($("qrMessage").value) : "");
+    }
+    if (type === "phone") {
+      const phone = $("qrPhone").value.trim();
+      if (!phone) throw Error("Enter a phone number.");
+      return "tel:" + phone;
+    }
+    if (type === "wifi") {
+      const ssid = $("qrSsid").value.trim();
+      if (!ssid) throw Error("Enter your Wi-Fi network name.");
+      const enc = $("qrEncryption").value;
+      const pass = $("qrWifiPass").value;
+      const esc = s => s.replace(/([\\;,:"])/g,"\\$1");
+      return "WIFI:T:" + enc + ";S:" + esc(ssid) + ";P:" + esc(pass) + ";;";
+    }
+    const name = $("qrName").value.trim();
+    if (!name) throw Error("Enter a contact name.");
+    return "BEGIN:VCARD\nVERSION:3.0\nFN:" + name + "\nTEL:" + $("qrVPhone").value + "\nEMAIL:" + $("qrEmail").value + "\nEND:VCARD";
+  }
+  function generateQr() {
+    if (!window.QRCode) { alert("QR library is still loading. Please try again in a moment."); return; }
+    let payload;
+    try { payload = qrPayload(); } catch (err) { alert(err.message); return; }
+    $("qrcode").innerHTML = "";
+    qrInstance = new QRCode($("qrcode"), {text:payload,width:220,height:220,colorDark:$("qrDark").value,colorLight:$("qrLight").value,correctLevel:QRCode.CorrectLevel.H});
+  }
+  $("qrType").addEventListener("change", renderQrFields);
+  $("makeQr").addEventListener("click", generateQr);
+  $("resetQr").addEventListener("click", () => { $("qrType").value="url"; $("qrDark").value="#172033"; $("qrLight").value="#ffffff"; renderQrFields(); $("qrcode").innerHTML=""; });
+  $("downloadQr").addEventListener("click", () => {
+    const canvas = $("qrcode").querySelector("canvas");
+    const img = $("qrcode").querySelector("img");
+    const url = canvas ? canvas.toDataURL("image/png") : img ? img.src : "";
+    if (!url) { alert("Generate a QR code first."); return; }
+    const a = document.createElement("a"); a.href=url; a.download="quicktools-qr-code.png"; a.click();
+  });
+  renderQrFields();
+
+  // QR Scanner
+  $("startScanner").addEventListener("click", async () => {
+    if (!window.Html5Qrcode) { alert("Scanner library is loading. Try again shortly."); return; }
+    try {
+      if (!scanner) scanner = new Html5Qrcode("reader");
+      const cameras = await Html5Qrcode.getCameras();
+      if (!cameras.length) throw Error("No camera was found.");
+      await scanner.start(cameras[0].id, {fps:10, qrbox:{width:230,height:230}}, decoded => {
+        $("scanResult").classList.remove("hidden");
+        $("scanResult").textContent = "Scanned result: " + decoded;
+        stopScanner();
+      }, () => {});
+    } catch (err) { alert("Could not start the camera: " + (err.message || err)); }
+  });
+  async function stopScanner() {
+    if (scanner && scanner.isScanning) {
+      try { await scanner.stop(); } catch (e) { /* camera may already be stopped */ }
+    }
+  }
+  $("stopScanner").addEventListener("click", stopScanner);
+
+  // Image resizer
+  let selectedImage = null;
+  $("imageFile").addEventListener("change", () => {
+    const file = $("imageFile").files[0];
+    if (!file) { selectedImage=null; return; }
+    if (!file.type.startsWith("image/")) { alert("Please select a valid image."); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        selectedImage = img;
+        $("imageWidth").value = img.naturalWidth;
+        $("imageInfo").textContent = `Original dimensions: ${img.naturalWidth} × ${img.naturalHeight} pixels.`;
+      };
+      img.onerror = () => alert("Could not read this image.");
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  $("imageQuality").addEventListener("input", () => $("qualityValue").textContent = $("imageQuality").value + "%");
+  $("processImage").addEventListener("click", () => {
+    if (!selectedImage) { alert("Choose an image first."); return; }
+    const width = Number($("imageWidth").value);
+    if (!Number.isInteger(width) || width < 1 || width > 10000) { alert("Enter a width between 1 and 10,000 pixels."); return; }
+    const height = Math.max(1, Math.round(width * selectedImage.naturalHeight / selectedImage.naturalWidth));
+    const canvas = $("imageCanvas"); canvas.width=width; canvas.height=height;
+    const ctx = canvas.getContext("2d");
+    if ($("imageFormat").value === "image/jpeg") { ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,width,height); }
+    ctx.drawImage(selectedImage,0,0,width,height);
+    canvas.toBlob(blob => {
+      if (!blob) { alert("Image export failed."); return; }
+      const url = URL.createObjectURL(blob);
+      const a=document.createElement("a"); a.href=url; a.download="quicktools-resized." + ($("imageFormat").value.split("/")[1] || "png"); a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }, $("imageFormat").value, Number($("imageQuality").value)/100);
+  });
+
+  // Password generator
+  $("passwordLength").addEventListener("input", () => $("lengthValue").textContent=$("passwordLength").value);
+  $("generatePassword").addEventListener("click", () => {
+    const groups=[];
+    if ($("pwUpper").checked) groups.push("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    if ($("pwLower").checked) groups.push("abcdefghijklmnopqrstuvwxyz");
+    if ($("pwNumbers").checked) groups.push("0123456789");
+    if ($("pwSymbols").checked) groups.push("!@#$%^&*()-_=+[]{};:,.?");
+    if (!groups.length) { alert("Select at least one character type."); return; }
+    const length=Number($("passwordLength").value), all=groups.join("");
+    const randomIndex=max => {
+      const range= new Uint32Array(1);
+      const limit=Math.floor(0x100000000/max)*max;
+      do { crypto.getRandomValues(range); } while(range[0]>=limit);
+      return range[0]%max;
+    };
+    const chars=groups.map(group=>group[randomIndex(group.length)]);
+    while(chars.length<length) chars.push(all[randomIndex(all.length)]);
+    for(let i=chars.length-1;i>0;i--){const j=randomIndex(i+1);[chars[i],chars[j]]=[chars[j],chars[i]];}
+    $("passwordOutput").value=chars.join("");
+  });
+  $("copyPassword").addEventListener("click", async () => {
+    if (!$("passwordOutput").value) return alert("Generate a password first.");
+    try { await navigator.clipboard.writeText($("passwordOutput").value); alert("Password copied."); } catch { alert("Clipboard access is unavailable in this browser."); }
+  });
+  $("generatePassword").click();
+
+  // Word counter
+  $("countText").addEventListener("input", () => {
+    const text=$("countText").value;
+    const words=text.trim() ? text.trim().split(/\s+/u).length : 0;
+    $("words").textContent=words;
+    $("characters").textContent=text.length;
+    $("sentences").textContent=(text.match(/[.!?]+(?=\s|$)/g)||[]).length;
+    $("reading").textContent=words ? Math.max(1,Math.ceil(words/200)) : 0;
+  });
+
+  // Base64 Unicode-safe conversion
+  $("encodeBase").addEventListener("click", () => {
+    try { $("baseOutput").value=btoa(unescape(encodeURIComponent($("baseInput").value))); }
+    catch { alert("Could not encode this text."); }
+  });
+  $("decodeBase").addEventListener("click", () => {
+    try { $("baseOutput").value=decodeURIComponent(escape(atob($("baseInput").value.trim()))); }
+    catch { alert("That does not look like valid Base64 text."); }
+  });
+  $("copyBase").addEventListener("click", async () => {
+    if (!$("baseOutput").value) return alert("There is no result to copy.");
+    try { await navigator.clipboard.writeText($("baseOutput").value); alert("Result copied."); } catch { alert("Clipboard access is unavailable."); }
+  });
+
+  // Slug generator
+  function makeSlug() {
+    const slug=$("slugInput").value.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
+      .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").replace(/-{2,}/g,"-");
+    $("slugOutput").value=slug;
+  }
+  $("makeSlug").addEventListener("click", makeSlug);
+  $("slugInput").addEventListener("input", makeSlug);
+  $("copySlug").addEventListener("click", async () => {
+    if (!$("slugOutput").value) return alert("Enter a title first.");
+    try { await navigator.clipboard.writeText($("slugOutput").value); alert("Slug copied."); } catch { alert("Clipboard access is unavailable."); }
+  });
+
+  // Random picker
+  $("pickNumber").addEventListener("click", () => {
+    const min=Number($("pickMin").value), max=Number($("pickMax").value);
+    if (!Number.isSafeInteger(min)||!Number.isSafeInteger(max)||max<min) { alert("Enter valid whole numbers. Maximum must be at least the minimum."); return; }
+    const span=max-min+1;
+    if (!Number.isSafeInteger(span) || span<=0) { alert("The selected range is too large."); return; }
+    const arr=new Uint32Array(1), limit=Math.floor(0x100000000/span)*span;
+    do { crypto.getRandomValues(arr); } while(arr[0]>=limit);
+    $("pickedNumber").textContent=String(min+(arr[0]%span));
+  });
+})();
+</script>
+</body>
+</html>
